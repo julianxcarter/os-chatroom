@@ -5,7 +5,7 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((socket.gethostbyname(''), 2007))
 
 
-print("Welcome to The Chatroom")
+print("Welcome to The")
 
 
 while True:
