@@ -4,10 +4,11 @@ import sys
   
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
  
-IP_address = "127.0.0.1"
-Port = 1278
+IP_address = "127.0.0.1" #IP address of server machine goes here
+Port = 1285
 server.connect((IP_address, Port)) 
 
+print("")
 print("Welcome to the Chatroom!")
 name = input("Enter a username: ")
 print("")
@@ -19,11 +20,23 @@ print("")
 
 while True: 
 
+    msg = input(f"{name}: ")
+
+    if msg:
+
+        if msg == 'quit':
+            print("Connection to the server has been closed")
+            sys.exit()
+       
+        else:
+            msg = name + ": " + msg
+            msg = msg.encode("utf-8")
+            server.send(msg)
+            continue
+
     try:
         while True:
             received = server.recv(2048)
-            if len(received) < 1:
-                break
             message = received.decode("utf-8")
             print(f"{message}")
             break
@@ -31,17 +44,9 @@ while True:
     except:
         continue
  
-    msg = input(f"{name}: ")
+    
  
-    if msg:
-        msg = name + ": " + msg
-        msg = msg.encode("utf-8")
-        if msg.decode('utf-8') == 'quit':
-            print("Connection to the server has been closed")
-            sys.exit()
-        else:
-            server.send(msg)
-            continue
+
 
  
     
