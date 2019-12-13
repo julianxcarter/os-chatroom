@@ -2,12 +2,13 @@ import socket
 import select 
 import sys 
 from _thread import *
+import threading
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
 server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) 
 
 IP_address = "0.0.0.0"
-Port = 1285
+Port = 1292
   
 
 #  Binds the server to the IP address and port number
@@ -18,6 +19,7 @@ server.bind((IP_address, Port))
 server.listen(5) 
   
 clients = [] 
+lock = threading.Lock()
 
 
 class ThreadPool:
@@ -29,24 +31,27 @@ class ThreadPool:
 
     def addClient(self, conn, addr):
         if len(self.threads) < self.thread_count:
+            lock.acquire()
             newthread = start_new_thread(ClientThread, (conn, addr))
             self.threads[conn] = newthread
+            lock.release()
 
         else:
             return False
 
     def removeClient(self, connection):
+        lock.acquire()
         del self.threads[connection]
+        lock.release()
   
 def ClientThread(conn, addr): 
-
 
     msg = "Server: Thread had been initialized, connection to the server has been established!"
     conn.send(msg.encode('utf-8')) 
     
     while True: 
             try: 
-                message = conn.recv(2048) 
+                message = conn.recv(2048)
                 if message: 
                     # From the message, the username is extracted and the message is printed
                     message = message.decode("utf-8")
@@ -82,7 +87,8 @@ def send_to_all(message, connection):
   
 # Removes the client from the threadpool
 def remove(connection): 
-    if connection in clients: 
+    if connection in clients:
+        connection.close()
         clients.remove(connection) 
                 
                 

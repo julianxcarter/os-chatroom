@@ -5,7 +5,7 @@ import sys
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
  
 IP_address = "127.0.0.1" #IP address of server machine goes here
-Port = 1285
+Port = 1292
 server.connect((IP_address, Port)) 
 
 print("")
@@ -25,6 +25,8 @@ while True:
     if msg:
 
         if msg == 'quit':
+            msg = msg.encode("utf-8")
+            server.send(msg)
             print("Connection to the server has been closed")
             sys.exit()
        
